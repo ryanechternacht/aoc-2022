@@ -40,7 +40,7 @@
        (apply set/intersection)
        first))
 
-(->> "resources/day03-sample.txt"
+(->> "resources/day03.txt"
      read-data-2
      (map find-badge-char)
      (map get-priority)
