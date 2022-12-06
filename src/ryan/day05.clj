@@ -3,9 +3,6 @@
             [clojure.java.io :as io]
             [clojure.string :as s]))
 
-(defn get-cols [piles]
-  (range piles))
-
 (defn build-stacks [lines piles]
   (let [cols (map #(inc (* 4 %)) (range piles))]
     (vec (for [c cols]
