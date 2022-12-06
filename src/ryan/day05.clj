@@ -1,7 +1,5 @@
 (ns ryan.day05
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io]
-            [clojure.string :as s]))
+  (:require [clojure.string :as str]))
 
 (defn build-stacks [lines piles]
   (let [cols (map #(inc (* 4 %)) (range piles))]
