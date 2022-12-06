@@ -12,12 +12,6 @@
                 (reduce conj '())
                 vec)))))
 
-(defn get-int-from-string [s i]
-  (-> s
-      (nth i)
-      int
-      (- (int \0))))
-
 (defn build-moves [lines]
   (map (fn [line]
          (let [[_ boxes _ from _ to] (str/split line #" ")]
@@ -31,7 +25,6 @@
                  "[N] [C]    "
                  "[Z] [M] [P]"]
                 3)
-  (get-int-from-string "move 1 from 2 to 1" 17) ; 5 12 17
   (build-moves ["move 1 from 2 to 1"
                 "move 3 from 1 to 3"
                 "move 12 from 2 to 14"
