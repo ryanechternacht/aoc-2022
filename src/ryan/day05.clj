@@ -47,14 +47,15 @@
 (comment
   (make-a-move [["Z" "N"] ["M" "C" "D"] ["P"]]
                {:boxes 1, :from 2, :to 1})
+  ;
   )
 
 ; part 1
 (let [{:keys [stacks moves]}
       (read-file "resources/day05.txt" 8 9)]
-      (->> (reduce make-a-move stacks moves)
-           (map last)
-           (str/join "")))
+  (->> (reduce make-a-move stacks moves)
+       (map last)
+       (str/join "")))
 
 (defn make-a-move-2 [stacks {:keys [boxes to from]}]
   (let [popped (take-last boxes (nth stacks (dec from)))]
@@ -64,8 +65,8 @@
 
 (comment
   (make-a-move-2 [["Z" "N"] ["M" "C" "D"] ["P"]]
-               {:boxes 3, :from 2, :to 1})
-  
+                 {:boxes 3, :from 2, :to 1})
+  ;
   )
 
 ; part 2
