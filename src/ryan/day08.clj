@@ -1,6 +1,5 @@
 (ns ryan.day08
-  (:require [clojure.string :as str]
-            [clojure.test :as t]))
+  (:require [clojure.string :as str]))
 
 (defn read-trees [file]
   (->> file
@@ -21,7 +20,7 @@
 ;; e.g. [0 0] [1 0] [2 0] for the first row of a 3x3
 (defn set-visibility-for-line [trees line]
   (:ts (reduce (fn [{:keys [ts tallest] :as acc} p]
-                 (let [{height :height :as t} (ts p)]
+                 (let [{height :height} (ts p)]
                    (if (<= height tallest)
                      acc
                      (-> acc
