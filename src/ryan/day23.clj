@@ -36,12 +36,12 @@
    [px (dec py)]
    [(inc px) (dec py)]])
 
-(comment 
+(comment
   (look-west [1 3])
   (look-east [1 3])
   (look-south [1 3])
   (look-north [1 3])
-  
+
   (#(second (look-north %)) [1 3])
   ;
   )
@@ -68,7 +68,7 @@
             #{}
             next-moves)))
 
-(comment 
+(comment
   (scatter-elves {:grid (read-elves "resources/day23-sample-simple.txt")
                   :moves move-order}
                  nil)
