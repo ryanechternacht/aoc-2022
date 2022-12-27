@@ -51,28 +51,63 @@
                  {:look look-west :next #(second (look-west %))}
                  {:look look-east :next #(second (look-east %))}])
 
-(defn scatter-elves [{grid :grid
-                      [{:keys [look next]} & others] :moves} _]
+(defn find-next-move [grid moves p]
+  (let [surroundings (reduce into #{} [(look-west p)
+                                       (look-east p)
+                                       (look-north p)
+                                       (look-south p)])]
+    (if (not-any? #(grid %) surroundings)
+      p
+      (reduce (fn [_ {:keys [look next]}]
+                (let [[l1 l2 l3] (look p)]
+                  (if (or (grid l1) (grid l2) (grid l3))
+                    p
+                    (reduced (next p)))))
+              p
+              moves))))
+
+(defn scatter-elves [{:keys [grid moves]} _]
   (let [next-moves (map (fn [p]
-                          (let [[l1 l2 l3] (look p)]
-                            (if (or (grid l1) (grid l2) (grid l3))
-                              [p p]
-                              [p (next p)])))
+                          [p (find-next-move grid moves p)])
                         grid)
-        next-moves-set (set (map second next-moves))]
-    (reduce (fn [acc [from to]]
-              (cond
-                (= from to) (conj acc from)
-                (next-moves-set to) (conj acc from)
-                :else (conj acc to)))
-            #{}
-            next-moves)))
+        new-grid (reduce (fn [acc [from to]]
+                           (let [next-moves-set (->> next-moves
+                                                     (remove (fn [[f _]] (= from f)))
+                                                     (map second)
+                                                     set)]
+                             (cond
+                               (= from to) (do #_(println "match") (conj acc from))
+                               (next-moves-set to) (do #_(println "crash!") (conj acc from))
+                               :else (do #_(println "move")  (conj acc to)))))
+                         #{}
+                         next-moves)]
+    {:grid new-grid
+     :moves (conj (vec (drop 1 moves)) (first moves))}))
 
 (comment
-  (scatter-elves {:grid (read-elves "resources/day23-sample-simple.txt")
+  (def simple-grid (read-elves "resources/day23-sample-simple.txt"))
+
+  (find-next-move simple-grid move-order [2 2])
+
+  (scatter-elves {:grid simple-grid
                   :moves move-order}
                  nil)
+
+  (reduce scatter-elves
+          {:grid simple-grid
+           :moves move-order}
+          (range 2))
   ;
   )
 
-(read-elves "resources/day23-sample.txt")
+(let [starting-grid (read-elves "resources/day23-sample.txt")
+      steps-to-take 10
+      {grid :grid} (reduce scatter-elves
+                           {:grid starting-grid
+                            :moves move-order}
+                           (range steps-to-take))
+      min-x (->> grid (map first) (reduce min))
+      max-x (->> grid (map first) (reduce max))
+      min-y (->> grid (map second) (reduce min))
+      max-y (->> grid (map second) (reduce max))]
+  (* (- max-x min-x) (- max-y min-y)))
