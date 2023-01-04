@@ -59,19 +59,21 @@
                 {:r dist
                  :d digit}
                 acc)))
-          {:r Integer/MAX_VALUE
+          {:r Long/MAX_VALUE
            :d nil}
           (range -2 3)))
 
 (defn decimal-to-snafu [num]
   (let [largest-digit (find-largest-digit num)
         s (:s (reduce (fn [{:keys [remaining s]} p]
+                        (println reduce)
                         (let [{:keys [r d]} (find-correct-digit remaining p)]
                           {:remaining r
                            :s (conj s (digit-to-snafu d))}))
                       {:remaining num
                        :s []}
                       (range largest-digit -1 -1)))]
+    (println s)
     (str/join "" s)))
 
 (comment
@@ -99,8 +101,20 @@
   )
 
 
-(->> "resources/day25-sample.txt"
+(->> "resources/day25.txt"
      read-snafu
      (map snafu-to-decimal)
      (reduce +)
-     (decimal-to-snafu))
+     decimal-to-snafu)
+
+;; 36332109854235
+
+(decimal-to-snafu 36332109854235)
+(pow 5 15)
+
+36332109854235
+30517578125
+
+(find-largest-digit 36332109854235)
+
+(find-correct-digit 36332109854235 14)

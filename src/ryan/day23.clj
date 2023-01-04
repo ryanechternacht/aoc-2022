@@ -100,7 +100,9 @@
   ;
   )
 
-(let [starting-grid (read-elves "resources/day23-sample.txt")
+
+;; part 1
+(let [starting-grid (read-elves "resources/day23.txt")
       steps-to-take 10
       {grid :grid} (reduce scatter-elves
                            {:grid starting-grid
@@ -110,4 +112,20 @@
       max-x (->> grid (map first) (reduce max))
       min-y (->> grid (map second) (reduce min))
       max-y (->> grid (map second) (reduce max))]
-  (* (- max-x min-x) (- max-y min-y)))
+  (println grid)
+  (println min-x max-x min-y max-y)
+  (- (* (inc (- max-x min-x)) (inc (- max-y min-y)))
+     (count grid)))
+
+;; part 2
+(loop [grid (read-elves "resources/day23.txt")
+       moves move-order
+       i 1]
+  (println i)
+  (let [{next-grid :grid
+         next-move-order :moves} (scatter-elves {:grid grid
+                                                 :moves moves}
+                                                nil)]
+    (if (= grid next-grid)
+      i
+      (recur next-grid next-move-order (inc i)))))
