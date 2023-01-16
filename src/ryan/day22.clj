@@ -239,7 +239,6 @@
 
       {:keys [position facing]}
       (reduce (fn [{facing :facing [x y] :position :as acc} instr]
-                (println "loop" [x y] facing)
                 (condp = instr
                   \R (update acc :facing turn-right)
                   \L (update acc :facing turn-left)
