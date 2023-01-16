@@ -108,7 +108,6 @@
 
 ;; dfs
 (def shortest-path (atom Integer/MAX_VALUE))
-(def print-check (atom 0))
 (def seen-space-time (atom #{}))
 
 (defn taxi-distance [[p1x p1y] [p2x p2y]]
@@ -116,22 +115,23 @@
 
 ;; part 1
 (time
- (loop [[[[x y :as expedition] steps] & others] [[expedition-start 0]]]
+ (loop [[[[x y :as expedition] steps] & others] [[expedition-start 0]]
+        print-check 0]
     ;; (Thread/sleep 100)
-   (when (zero? (mod (swap! print-check inc) 1000000))
+   (when (zero? (mod print-check 1000000))
      (println x y steps (count others)))
    (cond
      (nil? expedition) @shortest-path
-     (@seen-space-time [expedition steps]) (recur others)
-     (>= (+ (taxi-distance expedition expedition-target) steps) @shortest-path) (recur others)
+     (@seen-space-time [expedition steps]) (recur others (inc print-check))
+     (>= (+ (taxi-distance expedition expedition-target) steps) @shortest-path) (recur others (inc print-check))
     ;;  (>= steps @shortest-path) (recur others)
      (= expedition expedition-target) (do (swap! shortest-path min steps)
                                           (println "made it!" @shortest-path)
-                                          (recur others))
-     ((get-taken-spots steps) expedition) (recur others)
+                                          (recur others (inc print-check)))
+     ((get-taken-spots steps) expedition) (recur others (inc print-check))
      (and (not= expedition expedition-start)
           (or (neg? x) (neg? y)
-              (= starting-width x) (= starting-height y))) (recur others)
+              (= starting-width x) (= starting-height y))) (recur others (inc print-check))
      :else (do 
              (swap! seen-space-time conj [expedition steps])
              (recur (conj others
@@ -139,31 +139,32 @@
                             [[x (dec y)] (inc steps)]
                             [[x y] (inc steps)]
                             [[x (inc y)] (inc steps)]
-                            [[(inc x) y] (inc steps)]))))))
+                            [[(inc x) y] (inc steps)])
+                    (inc print-check))))))
 
 (defn journey-to [start-pos target-pos starting-steps starting-max]
   (let [shortest-path (atom starting-max)
-        print-check (atom 0)
         seen-space-time (atom #{})]
     (time
-     (loop [[[[x y :as expedition] steps] & others] [[start-pos starting-steps]]]
+     (loop [[[[x y :as expedition] steps] & others] [[start-pos starting-steps]]
+            print-check 0]
     ;;    (Thread/sleep 100)
     ;;    (println x y steps (count others))
 
-       (when (zero? (mod (swap! print-check inc) 1000000))
+       (when (zero? (mod print-check 1000000))
          (println x y steps (count others)))
        (cond
          (nil? expedition) @shortest-path
-         (@seen-space-time [expedition steps]) (recur others)
-         (>= (+ (taxi-distance expedition target-pos) steps) @shortest-path) (recur others)
+         (@seen-space-time [expedition steps]) (recur others (inc print-check))
+         (>= (+ (taxi-distance expedition target-pos) steps) @shortest-path) (recur others  (inc print-check))
     ;;  (>= steps @shortest-path) (recur others)
          (= expedition target-pos) (do (swap! shortest-path min steps)
                                        (println "made it!" @shortest-path)
-                                       (recur others))
-         ((get-taken-spots steps) expedition) (recur others)
+                                       (recur others  (inc print-check)))
+         ((get-taken-spots steps) expedition) (recur others  (inc print-check))
          (and (not= expedition start-pos)
               (or (neg? x) (neg? y)
-                  (>= x starting-width) (>= y starting-height))) (recur others)
+                  (>= x starting-width) (>= y starting-height))) (recur others  (inc print-check))
          :else (do
                  (swap! seen-space-time conj [expedition steps])
                  (recur (conj others
@@ -171,31 +172,32 @@
                               [[x (dec y)] (inc steps)]
                               [[x y] (inc steps)]
                               [[x (inc y)] (inc steps)]
-                              [[(inc x) y] (inc steps)]))))))))
+                              [[(inc x) y] (inc steps)])
+                         (inc print-check))))))))
 
 (defn journey-back [start-pos target-pos starting-steps starting-max]
   (let [shortest-path (atom starting-max)
-        print-check (atom 0)
         seen-space-time (atom #{})]
     (time
-     (loop [[[[x y :as expedition] steps] & others] [[start-pos starting-steps]]]
+     (loop [[[[x y :as expedition] steps] & others] [[start-pos starting-steps]]
+            print-check 0]
     ;;    (Thread/sleep 100)
     ;;    (println x y steps (count others))
 
-       (when (zero? (mod (swap! print-check inc) 1000000))
+       (when (zero? (mod print-check 1000000))
          (println x y steps (count others)))
        (cond
          (nil? expedition) @shortest-path
-         (@seen-space-time [expedition steps]) (recur others)
-         (>= (+ (taxi-distance expedition target-pos) steps) @shortest-path) (recur others)
+         (@seen-space-time [expedition steps]) (recur others (inc print-check))
+         (>= (+ (taxi-distance expedition target-pos) steps) @shortest-path) (recur others (inc print-check))
     ;;  (>= steps @shortest-path) (recur others)
          (= expedition target-pos) (do (swap! shortest-path min steps)
                                        (println "made it!" @shortest-path)
-                                       (recur others))
-         ((get-taken-spots steps) expedition) (recur others)
+                                       (recur others (inc print-check)))
+         ((get-taken-spots steps) expedition) (recur others (inc print-check))
          (and (not= expedition start-pos)
               (or (neg? x) (neg? y)
-                  (>= x starting-width) (>= y starting-height))) (recur others)
+                  (>= x starting-width) (>= y starting-height))) (recur others (inc print-check))
          :else (do
                  (swap! seen-space-time conj [expedition steps])
                  (recur (conj others
@@ -203,7 +205,8 @@
                               [[x (inc y)] (inc steps)]
                               [[x y] (inc steps)]
                               [[x (dec y)] (inc steps)]
-                              [[(dec x) y] (inc steps)]))))))))
+                              [[(dec x) y] (inc steps)])
+                        (inc print-check))))))))
 
 (journey-to expedition-start expedition-target 0 500)
 (journey-back expedition-target expedition-start 343 1000)
